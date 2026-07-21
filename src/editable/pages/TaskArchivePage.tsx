@@ -9,6 +9,7 @@ import { taskPageMetadata } from '@/config/site.content'
 import { taskPageVoices } from '@/editable/content/task-pages.content'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { getTaskTheme, taskThemeStyle } from '@/editable/theme/task-themes'
+import { Ads, getSlotSizes } from '@/lib/ads'
 
 export const revalidate = 3
 
@@ -60,6 +61,7 @@ const getField = (post: SitePost, keys: string[]) => {
   return ''
 }
 const cleanDomain = (value: string) => value.replace(/^https?:\/\//, '').replace(/\/$/, '')
+const pickRandom = (sizes: string[]) => sizes[Math.floor(Math.random() * sizes.length)]
 
 function pageHref(basePath: string, category: string, page: number) {
   const params = new URLSearchParams()
@@ -106,6 +108,10 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
   const page = pagination.page || 1
   const label = taskConfig?.label || task
   const categoryLabel = category === 'all' ? 'All categories' : CATEGORY_OPTIONS.find((item) => item.slug === category)?.name || category
+
+  if (task === 'sbm') {
+    return <SbmArchiveView posts={posts} pagination={pagination} category={category} categoryLabel={categoryLabel} basePath={basePath} />
+  }
 
   return (
     <EditableSiteShell>
@@ -171,6 +177,72 @@ export function TaskArchiveView({ task, posts, pagination, category, basePath }:
               {pagination.hasPrevPage ? <Link href={pageHref(basePath, category, page - 1)} className="rounded-full border border-[var(--tk-line)] px-5 py-2.5 font-medium transition hover:border-[var(--tk-accent)]">Previous</Link> : null}
               <span className="rounded-full border border-[var(--tk-line)] bg-[var(--tk-surface)] px-5 py-2.5 font-medium text-[var(--tk-muted)]">Page {page} of {pagination.totalPages || 1}</span>
               {pagination.hasNextPage ? <Link href={pageHref(basePath, category, page + 1)} className="rounded-full border border-[var(--tk-line)] px-5 py-2.5 font-medium transition hover:border-[var(--tk-accent)]">Next</Link> : null}
+            </nav>
+          ) : null}
+        </section>
+      </main>
+    </EditableSiteShell>
+  )
+}
+
+function SbmArchiveView({ posts, pagination, category, categoryLabel, basePath }: { posts: SitePost[]; pagination: SiteFeedPagination; category: string; categoryLabel: string; basePath: string }) {
+  const page = pagination.page || 1
+  return (
+    <EditableSiteShell>
+      <main style={taskThemeStyle('sbm')} className="min-h-screen bg-white text-black">
+        <header className="border-b border-[var(--editable-border)] bg-black text-white">
+          <div className="mx-auto max-w-[var(--editable-container)] px-5 py-18 sm:px-8 lg:px-16 lg:py-24">
+            <p className="text-xs font-medium uppercase tracking-[0.3em] text-[var(--tk-accent)]">Collections · Members</p>
+            <h1 className="editable-display mt-6 max-w-4xl text-5xl font-medium leading-[0.96] sm:text-7xl">Curated resource shelves for useful links.</h1>
+            <p className="mt-6 max-w-2xl text-base leading-8 text-white/65">Browse bookmarks, tools, references, and collection-ready resources with source context up front.</p>
+            <form action={basePath} className="mt-10 flex flex-col gap-3 border border-white/12 bg-white p-3 text-black sm:flex-row sm:items-center">
+              <div className="relative flex-1">
+                <select name="category" defaultValue={category} className="h-12 w-full appearance-none border border-[var(--editable-border)] bg-white px-4 pr-10 text-sm font-medium outline-none" aria-label="Filter collection">
+                  <option value="all">All collections</option>
+                  {CATEGORY_OPTIONS.map((item) => <option key={item.slug} value={item.slug}>{item.name}</option>)}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--tk-muted)]" />
+              </div>
+              <button className="inline-flex h-12 items-center justify-center bg-[var(--tk-accent)] px-6 text-sm font-medium text-white transition hover:-translate-y-0.5 hover:bg-black">Apply</button>
+            </form>
+          </div>
+        </header>
+
+        <section className="mx-auto max-w-[var(--editable-container)] px-5 py-16 sm:px-8 lg:px-16 lg:py-20">
+          <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.24em] text-[var(--tk-muted)]">{categoryLabel}</p>
+              <h2 className="mt-2 text-3xl font-medium">{posts.length} resources on this shelf</h2>
+            </div>
+            <Link href="/search" className="inline-flex h-[50px] items-center gap-2 border border-[var(--editable-border)] px-6 text-sm font-medium transition hover:-translate-y-0.5 hover:border-black">Search library <ArrowUpRight className="h-4 w-4" /></Link>
+          </div>
+
+          {posts.length ? (
+            <>
+              <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                {posts.map((post, index) => (
+                  <div key={post.id || post.slug}>
+                    <BookmarkArchiveCard post={post} href={`${basePath}/${post.slug}`} index={index} />
+                  </div>
+                ))}
+              </div>
+              <div className="mt-10 border border-[var(--editable-border)] bg-[var(--tk-raised)] p-5">
+                <Ads slot="in-feed" size={pickRandom(getSlotSizes('in-feed'))} showLabel className="mx-auto w-full" />
+              </div>
+            </>
+          ) : (
+            <div className="mx-auto max-w-xl border border-dashed border-[var(--tk-line)] bg-white px-8 py-16 text-center">
+              <Search className="mx-auto h-7 w-7 text-[var(--tk-muted)]" />
+              <h2 className="editable-display mt-5 text-2xl font-medium">No resources here yet</h2>
+              <p className="mt-2 text-sm leading-6 text-[var(--tk-muted)]">Try another collection or check back after new resources are added.</p>
+            </div>
+          )}
+
+          {posts.length ? (
+            <nav className="mt-16 flex items-center justify-center gap-3 text-sm">
+              {pagination.hasPrevPage ? <Link href={pageHref(basePath, category, page - 1)} className="border border-[var(--tk-line)] px-5 py-2.5 font-medium transition hover:border-[var(--tk-accent)]">Previous</Link> : null}
+              <span className="border border-[var(--tk-line)] bg-white px-5 py-2.5 font-medium text-[var(--tk-muted)]">Page {page} of {pagination.totalPages || 1}</span>
+              {pagination.hasNextPage ? <Link href={pageHref(basePath, category, page + 1)} className="border border-[var(--tk-line)] px-5 py-2.5 font-medium transition hover:border-[var(--tk-accent)]">Next</Link> : null}
             </nav>
           ) : null}
         </section>

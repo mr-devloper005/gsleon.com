@@ -1,4 +1,8 @@
 import { slot4BrandConfig } from '@/editable/theme/brand.config'
+import { CATEGORY_OPTIONS } from '@/lib/categories'
+
+export const uiHiddenTaskKeys = ['profile'] as const
+export const isUiHiddenTask = (key: string) => (uiHiddenTaskKeys as readonly string[]).includes(key)
 
 export const globalContent = {
   site: {
@@ -8,30 +12,22 @@ export const globalContent = {
     baseUrl: slot4BrandConfig.baseUrl,
   },
   nav: {
-    tagline: 'Independent reading platform',
+    tagline: 'Curated collections and resources',
     primaryLinks: [
-      { label: 'Articles', href: '/articles' },
-      { label: 'Visuals', href: '/image-sharing' },
-      { label: 'Listings', href: '/listings' },
       { label: 'Contact', href: '/contact' },
     ],
     actions: {
-      primary: { label: 'Start exploring', href: '/' },
-      secondary: { label: 'Submit', href: '/contact' },
+      primary: { label: 'Explore collections', href: '/sbm' },
+      secondary: { label: 'Submit a resource', href: '/contact' },
     },
   },
   footer: {
-    tagline: 'Stories, resources, and discoverable posts',
-    description: 'A connected publishing surface for articles, visuals, listings, profiles, bookmarks, and downloadable resources.',
+    tagline: 'Curated resources, organized into collections',
+    description: 'A public library for useful links, tools, references, and collections worth returning to.',
     columns: [
       {
-        title: 'Explore',
-        links: [
-          { label: 'Articles', href: '/articles' },
-          { label: 'Listings', href: '/listings' },
-          { label: 'Images', href: '/image-sharing' },
-          { label: 'PDF Library', href: '/pdf' },
-        ],
+        title: 'Collections',
+        links: CATEGORY_OPTIONS.slice(0, 8).map((item) => ({ label: item.name, href: `/sbm?category=${item.slug}` })),
       },
       {
         title: 'Site',
@@ -41,7 +37,7 @@ export const globalContent = {
         ],
       },
     ],
-    bottomNote: 'Built for clean discovery and connected publishing.',
+    bottomNote: 'Built for focused resource discovery.',
   },
   commonLabels: {
     readMore: 'Read more',
