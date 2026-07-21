@@ -56,7 +56,7 @@ export function postHref(task: TaskKey, post: SitePost, route = `/${task}`) {
   return `${route}/${post.slug}`
 }
 
-export function EditorialFeatureCard({ post, href, label = 'Featured read' }: { post: SitePost; href: string; label?: string }) {
+export function EditorialFeatureCard({ post, href, label = 'Featured resource' }: { post: SitePost; href: string; label?: string }) {
   return (
     <Link href={href} className={`group block min-w-0 overflow-hidden ${dc.surface.dark} ${dc.motion.lift}`}>
       <div className="relative min-h-[520px] p-6 sm:p-8 lg:min-h-[620px]">
@@ -66,8 +66,8 @@ export function EditorialFeatureCard({ post, href, label = 'Featured read' }: { 
           <span className={`${dc.type.eyebrow} ${pal.accentSoftText}`}>{label}</span>
           <h3 className="mt-5 max-w-3xl text-4xl font-black leading-[0.95] tracking-[-0.07em] sm:text-5xl lg:text-6xl">{post.title}</h3>
           <p className="mt-5 max-w-2xl text-sm leading-8 text-white/75 sm:text-base">{getEditableExcerpt(post, 190)}</p>
-          <span className={`mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-bold ${pal.panelText}`}>
-            Read story <ArrowRight className="h-4 w-4" />
+          <span className={`mt-8 inline-flex w-fit items-center gap-2 bg-white px-5 py-3 text-sm font-bold ${pal.panelText}`}>
+            Open resource <ArrowRight className="h-4 w-4" />
           </span>
         </div>
       </div>
@@ -116,7 +116,7 @@ export function ArticleListCard({ post, href, index }: { post: SitePost; href: s
         <p className={`${dc.type.eyebrow} ${pal.accentText}`}>Read {String(index + 1).padStart(2, '0')}</p>
         <h2 className={`mt-3 line-clamp-3 text-2xl font-black leading-tight tracking-[-0.05em] ${pal.panelText} sm:text-3xl`}>{post.title}</h2>
         <p className={`mt-4 line-clamp-3 text-sm leading-7 ${pal.softMutedText}`}>{getEditableExcerpt(post, 180)}</p>
-        <span className={`mt-5 inline-flex items-center gap-2 text-sm font-black ${pal.panelText}`}>Open article <ArrowRight className="h-4 w-4" /></span>
+        <span className={`mt-5 inline-flex items-center gap-2 text-sm font-black ${pal.panelText}`}>Open resource <ArrowRight className="h-4 w-4" /></span>
       </div>
     </Link>
   )
